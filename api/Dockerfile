@@ -19,10 +19,16 @@ WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
+# 🔹 Agregar argumento para invalidar cache de código
+ARG CACHE_BUSTER=1
+
 # copiar aplicación
 COPY app.py /app/app.py
-# si hay otras carpetas (módulos) copiarlas:
+# Si tenés más módulos:
 # COPY app/ /app/
+
+# 🔹 Forzar actualización de timestamps (opcional, extra seguridad)
+RUN find /app -type f -exec touch {} +
 
 # crear carpeta de descargas con permisos adecuados
 RUN mkdir -p /app/downloads && chmod 755 /app/downloads
