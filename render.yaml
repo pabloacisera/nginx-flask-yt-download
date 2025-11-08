@@ -30,7 +30,7 @@ services:
     envVars:
       # CORREGIDO: SOLO host:puerto (sin http://)
       - key: BACKEND_URL
-        value: flask-api.onrender.internal:5000 
+        value: http://flask-api.onrender.internal:5000 
     plan: free
 
 ---

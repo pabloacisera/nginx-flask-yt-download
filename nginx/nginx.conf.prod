@@ -7,9 +7,9 @@ http {
     sendfile on;
     keepalive_timeout 65;
 
-    # Directivas para resolución dinámica de DNS en Render
-    resolver 10.0.0.10 valid=30s;
-    set $backend_host "flask-api.onrender.internal:5000";
+    # 1. Definir el DNS de Render para resolución dinámica
+    # El resolver SÍ DEBE ir en el bloque http
+    resolver 10.0.0.10 valid=30s; 
 
     server {
         listen 80;
@@ -22,10 +22,13 @@ http {
 
         # Proxy para API
         location /api/ {
+            # Quitar el /api/ antes de enviar al backend
             rewrite ^/api/(.*) /$1 break;
             
-            # Usar protocolo fijo y la variable de host
-            proxy_pass http://$backend_host;
+            # 2. Usar la variable de ENTORNO directamente. 
+            # Como usamos el resolver, Nginx lo resolverá dinámicamente.
+            # El script entrypoint lo sustituye aquí.
+            proxy_pass ${BACKEND_URL}; 
             
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
