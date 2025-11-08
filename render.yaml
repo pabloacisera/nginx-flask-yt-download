@@ -13,9 +13,11 @@ services:
       - key: DEBUG
         value: false
       - key: DATABASE_URL
-        sync: false
+        sync: false # Render automáticamente inyectará el valor de la base de datos aquí
     healthCheckPath: /health
     plan: free
+
+---
 
   # ====================================
   # FRONTEND: Nginx
@@ -26,9 +28,12 @@ services:
     dockerfilePath: ./nginx/Dockerfile.prod
     dockerContext: ./nginx
     envVars:
+      # CAMBIO CLAVE: Usamos el nombre de host interno de Render para que Nginx pueda encontrar la API.
       - key: BACKEND_URL
-        value: http://flask-api:5000
+        value: http://flask-api.onrender.internal:5000 
     plan: free
+
+---
 
 # ====================================
 # BASE DE DATOS
