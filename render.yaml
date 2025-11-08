@@ -28,9 +28,9 @@ services:
     dockerfilePath: ./nginx/Dockerfile.prod
     dockerContext: ./nginx
     envVars:
-      # CORREGIDO: SOLO host:puerto (sin http://)
+      # URL pública del backend (Render ya la crea)
       - key: BACKEND_URL
-        value: http://flask-api.onrender.internal:5000 
+        value: https://flask-api-rtjs.onrender.com
     plan: free
 
 ---

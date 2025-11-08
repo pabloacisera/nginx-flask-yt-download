@@ -1,5 +1,8 @@
 worker_processes 1;
-events { worker_connections 1024; }
+
+events {
+    worker_connections 1024;
+}
 
 http {
     include       mime.types;
@@ -7,39 +10,34 @@ http {
     sendfile on;
     keepalive_timeout 65;
 
-    # 1. Definir el DNS de Render para resolución dinámica
-    # El resolver SÍ DEBE ir en el bloque http
-    resolver 10.0.0.10 valid=30s; 
-
     server {
         listen 80;
         root /usr/share/nginx/html;
         index index.html;
 
+        # Frontend (React/Vue/SPA)
         location / {
             try_files $uri $uri/ /index.html;
         }
 
-        # Proxy para API
+        # Proxy hacia la API de Flask (Render)
         location /api/ {
-            # Quitar el /api/ antes de enviar al backend
             rewrite ^/api/(.*) /$1 break;
-            
-            # 2. Usar la variable de ENTORNO directamente. 
-            # Como usamos el resolver, Nginx lo resolverá dinámicamente.
-            # El script entrypoint lo sustituye aquí.
-            proxy_pass ${BACKEND_URL}; 
-            
+
+            # Render usa dominio público HTTPS, no interno
+            proxy_pass https://flask-api-rtjs.onrender.com;
+
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
-            
+
             proxy_connect_timeout 300s;
             proxy_send_timeout 300s;
             proxy_read_timeout 300s;
         }
 
+        # Archivos estáticos
         location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
             expires 1y;
             add_header Cache-Control "public, immutable";
