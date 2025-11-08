@@ -13,11 +13,9 @@ services:
       - key: DEBUG
         value: false
       - key: DATABASE_URL
-        sync: false  # 👈 Lo configurarás manualmente en Render Dashboard
+        sync: false
     healthCheckPath: /health
     plan: free
-    # Puerto interno que expone el contenedor
-    #internalPort: 5000
 
   # ====================================
   # FRONTEND: Nginx
@@ -29,16 +27,13 @@ services:
     dockerContext: ./nginx
     envVars:
       - key: BACKEND_URL
-        value: http://flask-api:5000  # 👈 Nombre interno del servicio Flask
+        value: http://flask-api:5000
     plan: free
-    # Puerto interno que expone el contenedor
-    #internalPort: 80
 
 # ====================================
-# BASE DE DATOS (Opcional: si quieres crearla desde YAML)
+# BASE DE DATOS
 # ====================================
 databases:
   - name: mi-app-db
     databaseName: prod_db
-    user: postgres
     plan: free
