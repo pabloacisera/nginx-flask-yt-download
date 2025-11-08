@@ -14,7 +14,7 @@ services:
         value: false
       - key: DATABASE_URL
         sync: false # Render automáticamente inyectará el valor de la base de datos aquí
-    healthCheckPath: /health
+    healthCheckPath: /api/health
     plan: free
 
 ---
