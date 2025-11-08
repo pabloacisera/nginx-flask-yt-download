@@ -17,7 +17,7 @@ services:
     healthCheckPath: /health
     plan: free
     # Puerto interno que expone el contenedor
-    internalPort: 5000
+    #internalPort: 5000
 
   # ====================================
   # FRONTEND: Nginx
@@ -32,7 +32,7 @@ services:
         value: http://flask-api:5000  # 👈 Nombre interno del servicio Flask
     plan: free
     # Puerto interno que expone el contenedor
-    internalPort: 80
+    #internalPort: 80
 
 # ====================================
 # BASE DE DATOS (Opcional: si quieres crearla desde YAML)
