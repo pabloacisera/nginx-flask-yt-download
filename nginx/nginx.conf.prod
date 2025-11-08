@@ -2,39 +2,49 @@ worker_processes 1;
 events { worker_connections 1024; }
 
 http {
-    include       mime.types;
-    default_type  application/octet-stream;
-    sendfile on;
-    keepalive_timeout 65;
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile on;
+    keepalive_timeout 65;
 
-    server {
-        listen 80;
-        root /usr/share/nginx/html;
-        index index.html;
+    # 🛑 PASO 1: Agregar el resolver de Render y la bandera "valid"
+    resolver 10.0.0.10 valid=30s;
+    
+    # 🛑 PASO 2: Definir el host de backend como una variable
+    set $backend_host "http://flask-api.onrender.internal:5000";
 
-        location / {
-            try_files $uri $uri/ /index.html;
-        }
+    server {
+        listen 80;
+        root /usr/share/nginx/html;
+        index index.html;
 
-        # Proxy para API
-        location /api/ {
-            # 👇 REWRITE quita el /api/ antes de enviar al backend
-            rewrite ^/api/(.*) /$1 break;
-            proxy_pass http://flask-api.onrender.internal:5000;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        # Proxy para API
+        location /api/ {
+            # 👇 REWRITE quita el /api/ antes de enviar al backend
+            rewrite ^/api/(.*) /$1 break;
+            
+            # 🛑 PASO 3: Usar la variable en proxy_pass (SIN protocolo o puerto)
+            # Nginx lo agregará automáticamente si usas la variable.
+            proxy_pass $backend_host;
             
-            # Timeouts para procesamiento de audio
-            proxy_connect_timeout 300s;
-            proxy_send_timeout 300s;
-            proxy_read_timeout 300s;
-        }
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            # Timeouts para procesamiento de audio
+            proxy_connect_timeout 300s;
+            proxy_send_timeout 300s;
+            proxy_read_timeout 300s;
+        }
 
-        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
-            expires 1y;
-            add_header Cache-Control "public, immutable";
-        }
-    }
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+    }
 }
