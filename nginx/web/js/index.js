@@ -30,7 +30,8 @@ search_button.addEventListener("click", async function() {
 	try {
 		showAlert("Extrayendo información del video...", "info");
 		
-		const res = await fetch(`${API_BASE_URL}/api/search`, {
+		// ✅ CAMBIO: Usar API_BASE_URL de config.js
+		const res = await fetch(`${API_BASE_URL}/search`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ url })

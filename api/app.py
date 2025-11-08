@@ -129,7 +129,7 @@ def search_video():
                     'target_quality': '320 kbps',
                     'estimated_size_mb': estimated_size,
                 },
-                'download_endpoint': f'/api/download/{video_id}',
+                'download_endpoint': f'/api/download/{video_id}',  # ✅ Ruta relativa
                 'download_enhanced_endpoint': f'/api/download/{video_id}/enhanced',
                 'note': 'La descarga comenzará cuando hagas clic en el botón de descarga.'
             }

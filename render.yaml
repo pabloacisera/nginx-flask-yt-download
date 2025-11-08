@@ -1,0 +1,44 @@
+services:
+  # ====================================
+  # BACKEND: Flask API
+  # ====================================
+  - type: web
+    name: flask-api
+    runtime: docker
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: ./api
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: DEBUG
+        value: false
+      - key: DATABASE_URL
+        sync: false  # 👈 Lo configurarás manualmente en Render Dashboard
+    healthCheckPath: /health
+    plan: free
+    # Puerto interno que expone el contenedor
+    internalPort: 5000
+
+  # ====================================
+  # FRONTEND: Nginx
+  # ====================================
+  - type: web
+    name: nginx-frontend
+    runtime: docker
+    dockerfilePath: ./nginx/Dockerfile.prod
+    dockerContext: ./nginx
+    envVars:
+      - key: BACKEND_URL
+        value: http://flask-api:5000  # 👈 Nombre interno del servicio Flask
+    plan: free
+    # Puerto interno que expone el contenedor
+    internalPort: 80
+
+# ====================================
+# BASE DE DATOS (Opcional: si quieres crearla desde YAML)
+# ====================================
+databases:
+  - name: mi-app-db
+    databaseName: prod_db
+    user: postgres
+    plan: free
